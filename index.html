@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل بيانات العميل</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+    /* إضافة بعض الأنماط الإضافية إذا لزم الأمر */
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div id="app-container">
+        <!-- سيتم وضع النموذج أو صفحة العرض هنا -->
+    </div>
+    <script>
+        // بيانات الخيارات الثابتة
+        const speeds = ['300 MB', '400 MB', '500 MB', '1 GB'];
+        const packageTypes = ['مفوتر', 'مسبق'];
+        const boosters = ['بدون مقويات', '2 جهاز مقوي', '3 جهاز مقوي'];
+        const subscriptionDurations = ['6 شهور', '12 شهر'];
+
+        // كلمة المرور الصحيحة (يمكنك تغييرها)
+        const correctPassword = 'admin';
+        // الحصول على عنصر الحاوية
+        const appContainer = document.getElementById('app-container');
+        let currentPage = 'form'; // الصفحة الحالية (افتراضيًا النموذج)
+         // تهيئة حالة النموذج
+          let formData = {
+            customerName: '',
+            idNumber: '',
+            phoneNumber: '',
+            email: '',
+            packageType: packageTypes[0],
+             odp: '', // حقل الأودبي
+            speed: speeds[0],
+            booster: boosters[0],
+            packageAmount: '',
+            subscriptionDuration: subscriptionDurations[0],
+            agentCode: '',
+            registrationDate: '', // حقل التاريخ
+        };
+         // دالة لتحديث حالة النموذج
+      function handleChange(event) {
+          const { name, value } = event.target;
+          formData = { ...formData, [name]: value };
+           renderPage(); //تحديث الصفحة عند التغيير
+      }
+        // دالة للتحقق من كلمة المرور
+       function checkPassword(event) {
+            event.preventDefault();
+             const passwordInput = document.getElementById('password');
+            const enteredPassword = passwordInput.value;
+
+             if (enteredPassword === correctPassword) {
+                currentPage = 'customers'; // الانتقال إلى صفحة العملاء إذا كانت كلمة المرور صحيحة
+                renderPage();
+             } else {
+              alert('كلمة المرور غير صحيحة. الرجاء المحاولة مرة أخرى.');
+            }
+        }
+        // دالة الانتقال إلى صفحة العرض
+        function showCustomers() {
+            currentPage = 'password';
+            renderPage();
+        }
+         // دالة الانتقال إلى صفحة النموذج
+        function showForm() {
+            currentPage = 'form';
+             renderPage();
+        }
+
+        // دالة معالجة إرسال النموذج (تستخدم للحفظ عند النسخ والمشاركة)
+         function saveCustomerData() {
+            // التحقق من الحقول المطلوبة
+            if (!formData.customerName || !formData.idNumber || !formData.phoneNumber || !formData.email) {
+                alert('الرجاء ملء جميع الحقول المطلوبة (اسم العميل، رقم الهوية، رقم الجوال، الاميل).');
+                return false;
+            }
+
+            if (formData.packageType === 'مسبق' && !formData.packageAmount) {
+                alert('الرجاء ملء حقل مبلغ الباقه إذا كانت الباقة مسبقة الدفع.');
+                return false;
+            }
+             // اضافة التاريخ بشكل تلقائي
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const year = String(now.getFullYear()).slice(-2);
+
+            formData.registrationDate = `${month}/${day}/${year}`;
+
+            const storedCustomers = localStorage.getItem('customers');
+            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
+            customers.push(formData);
+            localStorage.setItem('customers', JSON.stringify(customers));
+            resetForm();
+            return true;
+        }
+
+          // دالة إعادة تعيين النموذج
+         function resetForm() {
+          formData = {
+            customerName: '',
+            idNumber: '',
+            phoneNumber: '',
+            email: '',
+            packageType: packageTypes[0],
+             odp: '', // حقل الأودبي
+            speed: speeds[0],
+            booster: boosters[0],
+            packageAmount: '',
+            subscriptionDuration: subscriptionDurations[0],
+            agentCode: '',
+             registrationDate: '',
+          };
+          renderPage(); // إعادة عرض الصفحة بقيم فارغة
+        }
+        // دالة إنشاء نص منسق لبيانات العميل
+         function formatCustomerData() {
+            return `
+            اسم العميل: ${formData.customerName}
+            رقم الهوية: ${formData.idNumber}
+            رقم الجوال: ${formData.phoneNumber}
+            تاريخ التسجيل : ${formData.registrationDate}
+            الاميل: ${formData.email}
+            الباقه: ${formData.packageType}
+              الاودبي : ${formData.odp}
+            السرعه: ${formData.speed}
+            المقويات: ${formData.booster}
+            مبلغ الباقه: ${formData.packageAmount}
+            مده الاشتراك: ${formData.subscriptionDuration}
+            كود المندوب: ${formData.agentCode}
+          `;
+          }
+          // دالة نسخ البيانات
+            function handleCopy() {
+                 if (saveCustomerData()){
+                    const customerText = formatCustomerData();
+                     navigator.clipboard.writeText(customerText);
+                }
+            }
+          // دالة مشاركة البيانات عبر WhatsApp
+        function handleShare() {
+               if (saveCustomerData()){
+                    const customerText = formatCustomerData();
+                   const url = `https://wa.me/?text=${encodeURIComponent(customerText)}`;
+                    window.open(url, '_blank');
+               }
+        }
+          // دالة إنشاء النموذج
+        function renderForm() {
+            return `
+          <div class="max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md">
+            <h2 class="text-lg font-bold mb-4">تسجيل بيانات العميل</h2>
+            <form >
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="customerName">اسم العميل</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="customerName" type="text" name="customerName" value="${formData.customerName}" onchange="handleChange(event)" >
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="idNumber">رقم الهوية</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="idNumber" type="text" name="idNumber" value="${formData.idNumber}" onchange="handleChange(event)" >
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="phoneNumber">رقم الجوال</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                 id="phoneNumber" type="text" name="phoneNumber" value="${formData.phoneNumber}" onchange="handleChange(event)" >
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">الاميل</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="email" type="email" name="email" value="${formData.email}" onchange="handleChange(event)" >
+              </div>
+               <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="packageType">الباقه</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="packageType" name="packageType" onchange="handleChange(event)" >
+                  ${packageTypes.map(type => `<option value="${type}" ${formData.packageType === type ? 'selected' : ''}>${type}</option>`).join('')}
+                </select>
+              </div>
+                 <div class="mb-4">
+                  <label class="block text-gray-700 text-sm font-bold mb-2" for="odp">الاودبي</label>
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="odp" type="text" name="odp" value="${formData.odp}" onchange="handleChange(event)" >
+                </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="speed">السرعه</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="speed" name="speed" onchange="handleChange(event)" >
+                ${speeds.map(speed => `<option value="${speed}" ${formData.speed === speed ? 'selected' : ''}>${speed}</option>`).join('')}
+                </select>
+            </div>
+            ${formData.packageType === 'مفوتر' && formData.speed !== '300 MB' ? `
+            <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="booster">المقويات</label>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="booster" name="booster" onchange="handleChange(event)" >
+                ${boosters.map(booster => `<option value="${booster}" ${formData.booster === booster ? 'selected' : ''}>${booster}</option>`).join('')}
+            </select>
+            </div>`: ''}
+            ${formData.packageType === 'مسبق' ? `
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="packageAmount">مبلغ الباقه</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   id="packageAmount" type="number" name="packageAmount" value="${formData.packageAmount}" onchange="handleChange(event)" >
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="subscriptionDuration">مده الاشتراك</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="subscriptionDuration" name="subscriptionDuration" onchange="handleChange(event)" >
+                    ${subscriptionDurations.map(duration => `<option value="${duration}" ${formData.subscriptionDuration === duration ? 'selected' : ''}>${duration}</option>`).join('')}
+                </select>
+            </div>`: ''}
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="agentCode">كود المندوب</label>
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                   id="agentCode" type="text" name="agentCode" value="${formData.agentCode}" onchange="handleChange(event)" >
+                </div>
+             <div class="flex justify-between">
+                 <button type="button" onclick="handleCopy()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">نسخ</button>
+                 <button type="button" onclick="handleShare()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">مشاركة</button>
+                  <button type="button" onclick="showCustomers()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">عرض البيانات</button>
+               </div>
+            </form>
+          </div>
+          `;
+      }
+       // دالة إنشاء صفحة عرض البيانات
+        function renderCustomers() {
+            const storedCustomers = localStorage.getItem('customers');
+            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
+
+           let tableHTML = `
+                <table class="w-full text-sm text-right  text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3">#</th>
+                            <th class="px-6 py-3">اسم العميل</th>
+                            <th class="px-6 py-3">رقم الهوية</th>
+                            <th class="px-6 py-3">الباقة</th>
+                            <th class="px-6 py-3">الأودبي</th>
+                            <th class="px-6 py-3">السرعة</th>
+                             <th class="px-6 py-3">رقم الجوال</th>
+                            <th class="px-6 py-3">تاريخ التسجيل</th>
+                            <th class="px-6 py-3">كود المندوب</th>
+                             <th class="px-6 py-3">المقويات</th>
+                            <th class="px-6 py-3">الاميل</th>
+                            <th class="px-6 py-3">مبلغ الباقة</th>
+                            <th class="px-6 py-3">مدة الاشتراك</th>
+                           <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+          `;
+            if (customers.length > 0) {
+                customers.forEach((customer, index) => {
+                     let phoneNumber = customer.phoneNumber;
+                    if(phoneNumber && phoneNumber.startsWith('0')){
+                        phoneNumber = '966' + phoneNumber.substring(1);
+                    }
+                    tableHTML += `
+                       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <td class="px-6 py-4">${index + 1}</td>
+                             <td class="px-6 py-4">${customer.customerName}</td>
+                            <td class="px-6 py-4">${customer.idNumber}</td>
+                            <td class="px-6 py-4">${customer.packageType}</td>
+                              <td class="px-6 py-4">${customer.odp}</td>
+                             <td class="px-6 py-4">${customer.speed}</td>
+                            <td class="px-6 py-4">${phoneNumber}</td>
+                            <td class="px-6 py-4">${customer.registrationDate}</td>
+                             <td class="px-6 py-4">${customer.agentCode}</td>
+                            <td class="px-6 py-4">${customer.booster}</td>
+                             <td class="px-6 py-4">${customer.email}</td>
+                            <td class="px-6 py-4">${customer.packageAmount}</td>
+                             <td class="px-6 py-4">${customer.subscriptionDuration}</td>
+                            <td class="px-6 py-4">
+                                <button type="button" onclick="deleteCustomer(${index})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded focus:outline-none focus:shadow-outline">حذف</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            } else {
+                tableHTML = "<p>لا يوجد عملاء مسجلين.</p>";
+            }
+
+
+            return `
+                <div class="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">العملاء المسجلين</h2>
+                    ${tableHTML}
+                     <button type="button" onclick="showForm()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">الرجوع إلى النموذج</button>
+                </div>
+            `;
+        }
+       // دالة إنشاء صفحة كلمة المرور
+       function renderPasswordPage() {
+            return `
+                <div class="max-w-md mx-auto p-4 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-center">الرجاء إدخال كلمة المرور</h2>
+                    <form onsubmit="checkPassword(event)">
+                        <div class="mb-4">
+                             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">كلمة المرور</label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="أدخل كلمة المرور هنا" required>
+                        </div>
+                         <div class="flex justify-center">
+                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">دخول</button>
+                       </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        // دالة حذف عميل
+      function deleteCustomer(index) {
+            const storedCustomers = localStorage.getItem('customers');
+            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
+            customers.splice(index, 1); // حذف العميل من المصفوفة
+             localStorage.setItem('customers', JSON.stringify(customers));
+             renderPage(); // إعادة عرض الصفحة
+            }
+
+      // دالة تحدد أي صفحة يتم عرضها
+         function renderPage() {
+          if (currentPage === 'form') {
+              appContainer.innerHTML = renderForm();
+          } else if (currentPage === 'customers') {
+              appContainer.innerHTML = renderCustomers();
+          } else if (currentPage === 'password') {
+                 appContainer.innerHTML = renderPasswordPage();
+            }
+        }
+      // عرض الصفحة الأولى لأول مرة
+        renderPage();
+    </script>
+</body>
+</html>
