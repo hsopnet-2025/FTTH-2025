@@ -1,344 +1,381 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل بيانات العميل</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>بيانات العميل</title>
     <style>
-    /* إضافة بعض الأنماط الإضافية إذا لزم الأمر */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f0ff; /* أزرق فاتح */
+            padding: 20px;
+            direction: rtl; /* لتوجيه النص من اليمين لليسار */
+        }
+        .container {
+            background-color: #ffffff; /* أبيض */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1); /* ظل أزرق خفيف */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3; /* أزرق داكن */
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333; /* رمادي داكن */
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #f9f9f9; /* خلفية فاتحة للحقول */
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #66afe9; /* أزرق فاتح عند التركيز */
+            outline: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            background-color: #007bff; /* أزرق */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3; /* أزرق داكن عند التحويم */
+        }
+        .button.copy {
+            background-color: #28a745; /* أخضر */
+        }
+        .button.copy:hover {
+            background-color: #218838; /* أخضر داكن عند التحويم */
+        }
+        .button.whatsapp {
+            background-color: #25d366; /* أخضر واتساب */
+        }
+        .button.whatsapp:hover {
+            background-color: #1da851; /* أخضر واتساب داكن عند التحويم */
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .image-container {
+            text-align: center; /* توسيط الصورة أفقياً */
+            margin-bottom: 20px; /* مسافة أسفل الصورة */
+        }
+        .image-container img {
+            max-width: 100%; /* التأكد من أن الصورة لا تتجاوز عرض الحاوية */
+            height: auto; /* الحفاظ على نسبة العرض إلى الارتفاع */
+        }
     </style>
 </head>
-<body class="bg-gray-100 p-4">
-
-    <div id="app-container">
-        <!-- سيتم وضع النموذج أو صفحة العرض هنا -->
+<body>
+    <div class="image-container">
+        <img src="C:\Users\A.Eissa\OneDrive\NEW CUSTOMER IFO\image.png" alt="صورة التطبيق"> <!-- استبدل image.png بمسار الصورة الفعلي -->
     </div>
+    <div class="container">
+        <h1>بيانات العميل</h1>
+        <div id="errorMessage" class="error-message hidden"></div>
+        <div class="form-group">
+            <label>اسم العميل</label>
+            <input type="text" id="name" placeholder="ادخل اسم العميل">
+        </div>
+        <div class="form-group">
+            <label>رقم الهوية</label>
+            <input type="text" id="id" placeholder="ادخل رقم الهوية">
+        </div>
+        <div class="form-group">
+            <label>رقم الجوال</label>
+            <input type="text" id="phone" placeholder="ادخل رقم الجوال (يجب أن يبدأ بـ 0 ويتكون من 10 أرقام)">
+        </div>
+        <div class="form-group">
+            <label>الإيميل</label>
+            <input type="email" id="email" placeholder="ادخل الإيميل">
+        </div>
+        <div class="form-group">
+            <label>الباقة</label>
+            <select id="package" onchange="updateFields()">
+                <option value="">اختر الباقة</option>
+                <option value="مسبق">مسبق</option>
+                <option value="مفوتر">مفوتر</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>الاودبي</label>
+            <input type="text" id="audibi" placeholder="ادخل الاودبي">
+        </div>
+        <div class="form-group">
+            <label>السرعة</label>
+            <select id="speed" onchange="updateFields()">
+                <option value="">اختر السرعة</option>
+                <option value="300MB">300MB</option>
+                <option value="400MB">400MB</option>
+                <option value="500MB">500MB</option>
+                <option value="1GB">1GB</option>
+            </select>
+        </div>
+        <!-- حقل مدة الاشتراك -->
+        <div class="form-group" id="subscriptionDurationGroup">
+            <label>مدة الاشتراك</label>
+            <select id="subscriptionDuration" onchange="updatePackagePrices()">
+                <option value="">اختر المدة</option>
+                <option value="6">6 أشهر</option>
+                <option value="12">12 شهرًا</option>
+            </select>
+        </div>
+        <!-- حقل سعر الباقة -->
+        <div class="form-group" id="packagePriceGroup">
+            <label>سعر الباقة</label>
+            <select id="packagePrice">
+                <option value="">اختر السعر</option>
+            </select>
+        </div>
+        <div class="form-group hidden" id="boostersGroup">
+            <label>المقويات</label>
+            <select id="boosters">
+                <option value="">اختر المقويات</option>
+                <option value="يوجد مقويات">يوجد مقويات</option>
+                <option value="بدون مقويات">بدون مقويات</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>كود المندوب</label>
+            <input type="text" id="code" placeholder="ادخل كود المندوب">
+        </div>
+        <button class="button copy" onclick="copyData()">نسخ البيانات</button>
+        <button class="button whatsapp" onclick="shareOnWhatsApp()">مشاركة عبر واتساب</button>
+    </div>
+
     <script>
-        // بيانات الخيارات الثابتة
-        const speeds = ['300 MB', '400 MB', '500 MB', '1 GB'];
-        const packageTypes = ['مفوتر', 'مسبق'];
-        const boosters = ['بدون مقويات', '2 جهاز مقوي', '3 جهاز مقوي'];
-        const subscriptionDurations = ['6 شهور', '12 شهر'];
+        // تحديث إظهار/إخفاء الحقول بناءً على الشروط
+        function updateFields() {
+            const package = document.getElementById('package').value;
+            const speed = document.getElementById('speed').value;
+            const boostersGroup = document.getElementById('boostersGroup');
+            const subscriptionDurationGroup = document.getElementById('subscriptionDurationGroup');
+            const packagePriceGroup = document.getElementById('packagePriceGroup');
 
-        // كلمة المرور الصحيحة (يمكنك تغييرها)
-        const correctPassword = 'admin';
-        // الحصول على عنصر الحاوية
-        const appContainer = document.getElementById('app-container');
-        let currentPage = 'form'; // الصفحة الحالية (افتراضيًا النموذج)
-         // تهيئة حالة النموذج
-          let formData = {
-            customerName: '',
-            idNumber: '',
-            phoneNumber: '',
-            email: '',
-            packageType: packageTypes[0],
-             odp: '', // حقل الأودبي
-            speed: speeds[0],
-            booster: boosters[0],
-            packageAmount: '',
-            subscriptionDuration: subscriptionDurations[0],
-            agentCode: '',
-            registrationDate: '', // حقل التاريخ
-        };
-         // دالة لتحديث حالة النموذج
-      function handleChange(event) {
-          const { name, value } = event.target;
-          formData = { ...formData, [name]: value };
-           renderPage(); //تحديث الصفحة عند التغيير
-      }
-        // دالة للتحقق من كلمة المرور
-       function checkPassword(event) {
-            event.preventDefault();
-             const passwordInput = document.getElementById('password');
-            const enteredPassword = passwordInput.value;
+            // إظهار/إخفاء حقل المقويات
+            if (package === 'مسبق' || (package === 'مفوتر' && speed === '300MB')) {
+                boostersGroup.classList.add('hidden');
+            } else {
+                boostersGroup.classList.remove('hidden');
+            }
 
-             if (enteredPassword === correctPassword) {
-                currentPage = 'customers'; // الانتقال إلى صفحة العملاء إذا كانت كلمة المرور صحيحة
-                renderPage();
-             } else {
-              alert('كلمة المرور غير صحيحة. الرجاء المحاولة مرة أخرى.');
+            // إظهار/إخفاء حقل مدة الاشتراك وسعر الباقة
+            if (package === 'مفوتر') {
+                subscriptionDurationGroup.classList.add('hidden');
+                packagePriceGroup.classList.add('hidden');
+            } else {
+                subscriptionDurationGroup.classList.remove('hidden');
+                packagePriceGroup.classList.remove('hidden');
+                updatePackagePrices(); // تحديث أسعار الباقة
             }
         }
-        // دالة الانتقال إلى صفحة العرض
-        function showCustomers() {
-            currentPage = 'password';
-            renderPage();
-        }
-         // دالة الانتقال إلى صفحة النموذج
-        function showForm() {
-            currentPage = 'form';
-             renderPage();
+
+        // تحديث خيارات سعر الباقة بناءً على مدة الاشتراك
+        function updatePackagePrices() {
+            const duration = document.getElementById('subscriptionDuration').value;
+            const packagePriceSelect = document.getElementById('packagePrice');
+
+            // مسح الخيارات الحالية
+            packagePriceSelect.innerHTML = '';
+
+            // إضافة الخيارات بناءً على مدة الاشتراك
+            if (duration === "6") {
+                addOption(packagePriceSelect, "1725", "1725 ريال");
+                addOption(packagePriceSelect, "2070", "2070 ريال");
+                addOption(packagePriceSelect, "2415", "2415 ريال");
+                addOption(packagePriceSelect, "5520", "5520 ريال");
+            } else if (duration === "12") {
+                addOption(packagePriceSelect, "3450", "3450 ريال");
+                addOption(packagePriceSelect, "4140", "4140 ريال");
+                addOption(packagePriceSelect, "4830", "4830 ريال");
+                addOption(packagePriceSelect, "11040", "11040 ريال");
+            }
         }
 
-        // دالة معالجة إرسال النموذج (تستخدم للحفظ عند النسخ والمشاركة)
-         function saveCustomerData() {
-            // التحقق من الحقول المطلوبة
-            if (!formData.customerName || !formData.idNumber || !formData.phoneNumber || !formData.email) {
-                alert('الرجاء ملء جميع الحقول المطلوبة (اسم العميل، رقم الهوية، رقم الجوال، الاميل).');
+        // إضافة خيار جديد إلى القائمة
+        function addOption(selectElement, value, text) {
+            const option = document.createElement("option");
+            option.value = value;
+            option.text = text;
+            selectElement.add(option);
+        }
+
+        // نسخ البيانات إلى الحافظة
+        function copyData() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const package = document.getElementById('package').value;
+            const audibi = document.getElementById('audibi').value;
+            const speed = document.getElementById('speed').value;
+            const boosters = document.getElementById('boosters').value;
+            const code = document.getElementById('code').value;
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value;
+            const packagePrice = document.getElementById('packagePrice').value;
+
+            const formattedPackage = formatPackage(package);
+            const formattedPhone = '966' + phone.slice(1);
+            const formattedAudibi = formatAudibi(audibi);
+
+            // بناء البيانات بدون أسماء الحقول
+            let data = `${name}\n${id}\n${formattedPhone}\n${email}\n${formattedPackage}\n${formattedAudibi}\n${speed}\n${boosters}\n${code}`;
+
+            // إضافة مدة الاشتراك وسعر الباقة فقط إذا كانت الباقة "مسبق"
+            if (package === 'مسبق') {
+                data += `\n${subscriptionDuration}\n${packagePrice}`;
+            }
+
+            // إنشاء عنصر نصي مؤقت
+            const tempInput = document.createElement('textarea');
+            tempInput.value = data;
+            document.body.appendChild(tempInput);
+
+            // نسخ النص
+            tempInput.select();
+            document.execCommand('copy');
+
+            // إزالة العنصر مؤقت
+            document.body.removeChild(tempInput);
+
+            alert('تم نسخ البيانات إلى الحافظة!');
+        }
+
+        // مشاركة البيانات عبر واتساب
+        function shareOnWhatsApp() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const package = document.getElementById('package').value;
+            const audibi = document.getElementById('audibi').value;
+            const speed = document.getElementById('speed').value;
+            const boosters = document.getElementById('boosters').value;
+            const code = document.getElementById('code').value;
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value;
+            const packagePrice = document.getElementById('packagePrice').value;
+
+            const formattedPackage = formatPackage(package);
+            const formattedPhone = '966' + phone.slice(1);
+            const formattedAudibi = formatAudibi(audibi);
+
+            // بناء البيانات بدون أسماء الحقول
+            let message = `${name}\n${id}\n${formattedPhone}\n${email}\n${formattedPackage}\n${formattedAudibi}\n${speed}\n${boosters}\n${code}`;
+
+            // إضافة مدة الاشتراك وسعر الباقة فقط إذا كانت الباقة "مسبق"
+            if (package === 'مسبق') {
+                message += `\n${subscriptionDuration}\n${packagePrice}`;
+            }
+
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // التحقق من صحة رقم الجوال
+        function validatePhone(phone) {
+            const phoneRegex = /^0\d{9}$/; // يبدأ بـ 0 ويتكون من 10 أرقام
+            return phoneRegex.test(phone);
+        }
+
+        // التحقق من صحة الإيميل
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // تنسيق إيميل صحيح
+            return emailRegex.test(email);
+        }
+
+        // التحقق من عدم ترك أي حقل فارغ
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const id = document.getElementById('id').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const package = document.getElementById('package').value.trim();
+            const audibi = document.getElementById('audibi').value.trim();
+            const speed = document.getElementById('speed').value.trim();
+            const boosters = document.getElementById('boosters').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value.trim();
+            const packagePrice = document.getElementById('packagePrice').value.trim();
+
+            if (!name || !id || !phone || !email || !package || !audibi || !speed || !code) {
+                alert('يرجى ملء جميع الحقول!');
                 return false;
             }
 
-            if (formData.packageType === 'مسبق' && !formData.packageAmount) {
-                alert('الرجاء ملء حقل مبلغ الباقه إذا كانت الباقة مسبقة الدفع.');
+            if (!validatePhone(phone)) {
+                alert('رقم الجوال غير صحيح! يجب أن يبدأ بـ 0 ويتكون من 10 أرقام.');
                 return false;
             }
-             // اضافة التاريخ بشكل تلقائي
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const year = String(now.getFullYear()).slice(-2);
 
-            formData.registrationDate = `${month}/${day}/${year}`;
+            if (!validateEmail(email)) {
+                alert('الإيميل غير صحيح! يرجى إدخال إيميل صالح.');
+                return false;
+            }
 
-            const storedCustomers = localStorage.getItem('customers');
-            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
-            customers.push(formData);
-            localStorage.setItem('customers', JSON.stringify(customers));
-            resetForm();
+            // التحقق من اختيار المقويات إذا كان الحقل ظاهرًا
+            const boostersGroup = document.getElementById('boostersGroup');
+            if (!boostersGroup.classList.contains('hidden') && !boosters) {
+                alert('يرجى اختيار المقويات!');
+                return false;
+            }
+
             return true;
         }
 
-          // دالة إعادة تعيين النموذج
-         function resetForm() {
-          formData = {
-            customerName: '',
-            idNumber: '',
-            phoneNumber: '',
-            email: '',
-            packageType: packageTypes[0],
-             odp: '', // حقل الأودبي
-            speed: speeds[0],
-            booster: boosters[0],
-            packageAmount: '',
-            subscriptionDuration: subscriptionDurations[0],
-            agentCode: '',
-             registrationDate: '',
-          };
-          renderPage(); // إعادة عرض الصفحة بقيم فارغة
-        }
-        // دالة إنشاء نص منسق لبيانات العميل
-         function formatCustomerData() {
-            return `
-            اسم العميل: ${formData.customerName}
-            رقم الهوية: ${formData.idNumber}
-            رقم الجوال: ${formData.phoneNumber}
-            تاريخ التسجيل : ${formData.registrationDate}
-            الاميل: ${formData.email}
-            الباقه: ${formData.packageType}
-              الاودبي : ${formData.odp}
-            السرعه: ${formData.speed}
-            المقويات: ${formData.booster}
-            مبلغ الباقه: ${formData.packageAmount}
-            مده الاشتراك: ${formData.subscriptionDuration}
-            كود المندوب: ${formData.agentCode}
-          `;
-          }
-          // دالة نسخ البيانات
-            function handleCopy() {
-                 if (saveCustomerData()){
-                    const customerText = formatCustomerData();
-                     navigator.clipboard.writeText(customerText);
-                }
+        // تنسيق الباقة
+        function formatPackage(package) {
+            if (package === 'مفوتر') {
+                return 'eLife Connect Postpaid';
+            } else if (package === 'مسبق') {
+                return 'eLife Connect Prepaid';
             }
-          // دالة مشاركة البيانات عبر WhatsApp
-        function handleShare() {
-               if (saveCustomerData()){
-                    const customerText = formatCustomerData();
-                   const url = `https://wa.me/?text=${encodeURIComponent(customerText)}`;
-                    window.open(url, '_blank');
-               }
+            return package;
         }
-          // دالة إنشاء النموذج
-        function renderForm() {
-            return `
-          <div class="max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md">
-            <h2 class="text-lg font-bold mb-4">تسجيل بيانات العميل</h2>
-            <form >
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="customerName">اسم العميل</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="customerName" type="text" name="customerName" value="${formData.customerName}" onchange="handleChange(event)" >
-              </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="idNumber">رقم الهوية</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="idNumber" type="text" name="idNumber" value="${formData.idNumber}" onchange="handleChange(event)" >
-              </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="phoneNumber">رقم الجوال</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                 id="phoneNumber" type="text" name="phoneNumber" value="${formData.phoneNumber}" onchange="handleChange(event)" >
-              </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">الاميل</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email" type="email" name="email" value="${formData.email}" onchange="handleChange(event)" >
-              </div>
-               <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="packageType">الباقه</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="packageType" name="packageType" onchange="handleChange(event)" >
-                  ${packageTypes.map(type => `<option value="${type}" ${formData.packageType === type ? 'selected' : ''}>${type}</option>`).join('')}
-                </select>
-              </div>
-                 <div class="mb-4">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="odp">الاودبي</label>
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="odp" type="text" name="odp" value="${formData.odp}" onchange="handleChange(event)" >
-                </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="speed">السرعه</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="speed" name="speed" onchange="handleChange(event)" >
-                ${speeds.map(speed => `<option value="${speed}" ${formData.speed === speed ? 'selected' : ''}>${speed}</option>`).join('')}
-                </select>
-            </div>
-            ${formData.packageType === 'مفوتر' && formData.speed !== '300 MB' ? `
-            <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="booster">المقويات</label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="booster" name="booster" onchange="handleChange(event)" >
-                ${boosters.map(booster => `<option value="${booster}" ${formData.booster === booster ? 'selected' : ''}>${booster}</option>`).join('')}
-            </select>
-            </div>`: ''}
-            ${formData.packageType === 'مسبق' ? `
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="packageAmount">مبلغ الباقه</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   id="packageAmount" type="number" name="packageAmount" value="${formData.packageAmount}" onchange="handleChange(event)" >
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="subscriptionDuration">مده الاشتراك</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="subscriptionDuration" name="subscriptionDuration" onchange="handleChange(event)" >
-                    ${subscriptionDurations.map(duration => `<option value="${duration}" ${formData.subscriptionDuration === duration ? 'selected' : ''}>${duration}</option>`).join('')}
-                </select>
-            </div>`: ''}
-              <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="agentCode">كود المندوب</label>
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   id="agentCode" type="text" name="agentCode" value="${formData.agentCode}" onchange="handleChange(event)" >
-                </div>
-             <div class="flex justify-between">
-                 <button type="button" onclick="handleCopy()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">نسخ</button>
-                 <button type="button" onclick="handleShare()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">مشاركة</button>
-                  <button type="button" onclick="showCustomers()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">عرض البيانات</button>
-               </div>
-            </form>
-          </div>
-          `;
-      }
-       // دالة إنشاء صفحة عرض البيانات
-        function renderCustomers() {
-            const storedCustomers = localStorage.getItem('customers');
-            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
 
-           let tableHTML = `
-                <table class="w-full text-sm text-right  text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th class="px-6 py-3">#</th>
-                            <th class="px-6 py-3">اسم العميل</th>
-                            <th class="px-6 py-3">رقم الهوية</th>
-                            <th class="px-6 py-3">الباقة</th>
-                            <th class="px-6 py-3">الأودبي</th>
-                            <th class="px-6 py-3">السرعة</th>
-                             <th class="px-6 py-3">رقم الجوال</th>
-                            <th class="px-6 py-3">تاريخ التسجيل</th>
-                            <th class="px-6 py-3">كود المندوب</th>
-                             <th class="px-6 py-3">المقويات</th>
-                            <th class="px-6 py-3">الاميل</th>
-                            <th class="px-6 py-3">مبلغ الباقة</th>
-                            <th class="px-6 py-3">مدة الاشتراك</th>
-                           <th class="px-6 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-          `;
-            if (customers.length > 0) {
-                customers.forEach((customer, index) => {
-                     let phoneNumber = customer.phoneNumber;
-                    if(phoneNumber && phoneNumber.startsWith('0')){
-                        phoneNumber = '966' + phoneNumber.substring(1);
-                    }
-                    tableHTML += `
-                       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <td class="px-6 py-4">${index + 1}</td>
-                             <td class="px-6 py-4">${customer.customerName}</td>
-                            <td class="px-6 py-4">${customer.idNumber}</td>
-                            <td class="px-6 py-4">${customer.packageType}</td>
-                              <td class="px-6 py-4">${customer.odp}</td>
-                             <td class="px-6 py-4">${customer.speed}</td>
-                            <td class="px-6 py-4">${phoneNumber}</td>
-                            <td class="px-6 py-4">${customer.registrationDate}</td>
-                             <td class="px-6 py-4">${customer.agentCode}</td>
-                            <td class="px-6 py-4">${customer.booster}</td>
-                             <td class="px-6 py-4">${customer.email}</td>
-                            <td class="px-6 py-4">${customer.packageAmount}</td>
-                             <td class="px-6 py-4">${customer.subscriptionDuration}</td>
-                            <td class="px-6 py-4">
-                                <button type="button" onclick="deleteCustomer(${index})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded focus:outline-none focus:shadow-outline">حذف</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tableHTML += `
-                    </tbody>
-                </table>
-            `;
-            } else {
-                tableHTML = "<p>لا يوجد عملاء مسجلين.</p>";
+        // تنسيق الاودبي
+        function formatAudibi(audibi) {
+            if (audibi.startsWith('D')) {
+                return `ODB:${audibi}`; // بدون مسافة بعد النقطتين
             }
-
-
-            return `
-                <div class="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4">العملاء المسجلين</h2>
-                    ${tableHTML}
-                     <button type="button" onclick="showForm()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">الرجوع إلى النموذج</button>
-                </div>
-            `;
-        }
-       // دالة إنشاء صفحة كلمة المرور
-       function renderPasswordPage() {
-            return `
-                <div class="max-w-md mx-auto p-4 bg-white rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4 text-center">الرجاء إدخال كلمة المرور</h2>
-                    <form onsubmit="checkPassword(event)">
-                        <div class="mb-4">
-                             <label class="block text-gray-700 text-sm font-bold mb-2" for="password">كلمة المرور</label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="أدخل كلمة المرور هنا" required>
-                        </div>
-                         <div class="flex justify-center">
-                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">دخول</button>
-                       </div>
-                    </form>
-                </div>
-            `;
+            return audibi;
         }
 
-        // دالة حذف عميل
-      function deleteCustomer(index) {
-            const storedCustomers = localStorage.getItem('customers');
-            const customers = storedCustomers ? JSON.parse(storedCustomers) : [];
-            customers.splice(index, 1); // حذف العميل من المصفوفة
-             localStorage.setItem('customers', JSON.stringify(customers));
-             renderPage(); // إعادة عرض الصفحة
-            }
-
-      // دالة تحدد أي صفحة يتم عرضها
-         function renderPage() {
-          if (currentPage === 'form') {
-              appContainer.innerHTML = renderForm();
-          } else if (currentPage === 'customers') {
-              appContainer.innerHTML = renderCustomers();
-          } else if (currentPage === 'password') {
-                 appContainer.innerHTML = renderPasswordPage();
-            }
-        }
-      // عرض الصفحة الأولى لأول مرة
-        renderPage();
+        // تحديث الحقول عند تحميل الصفحة
+        window.onload = function () {
+            updateFields();
+            updatePackagePrices();
+        };
     </script>
 </body>
 </html>
