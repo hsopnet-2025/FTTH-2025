@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيانات العميل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f0ff; /* أزرق فاتح */
+            padding: 20px;
+            direction: rtl; /* لتوجيه النص من اليمين لليسار */
+        }
+        .container {
+            background-color: #ffffff; /* أبيض */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1); /* ظل أزرق خفيف */
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3; /* أزرق داكن */
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333; /* رمادي داكن */
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #f9f9f9; /* خلفية فاتحة للحقول */
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #66afe9; /* أزرق فاتح عند التركيز */
+            outline: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            background-color: #007bff; /* أزرق */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3; /* أزرق داكن عند التحويم */
+        }
+        .button.copy {
+            background-color: #28a745; /* أخضر */
+        }
+        .button.copy:hover {
+            background-color: #218838; /* أخضر داكن عند التحويم */
+        }
+        .button.whatsapp {
+            background-color: #25d366; /* أخضر واتساب */
+        }
+        .button.whatsapp:hover {
+            background-color: #1da851; /* أخضر واتساب داكن عند التحويم */
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .image-container {
+            text-align: center; /* توسيط الصورة أفقياً */
+            margin-bottom: 20px; /* مسافة أسفل الصورة */
+        }
+        .image-container img {
+            max-width: 100%; /* التأكد من أن الصورة لا تتجاوز عرض الحاوية */
+            height: auto; /* الحفاظ على نسبة العرض إلى الارتفاع */
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <img src="C:\Users\A.Eissa\OneDrive\NEW CUSTOMER IFO\image.png" alt="صورة التطبيق"> <!-- استبدل image.png بمسار الصورة الفعلي -->
+    </div>
+    <div class="container">
+        <h1>بيانات العميل</h1>
+        <div id="errorMessage" class="error-message hidden"></div>
+        <div class="form-group">
+            <label>اسم العميل</label>
+            <input type="text" id="name" placeholder="ادخل اسم العميل">
+        </div>
+        <div class="form-group">
+            <label>رقم الهوية</label>
+            <input type="text" id="id" placeholder="ادخل رقم الهوية">
+        </div>
+        <div class="form-group">
+            <label>رقم الجوال</label>
+            <input type="text" id="phone" placeholder="ادخل رقم الجوال (يجب أن يبدأ بـ 0 ويتكون من 10 أرقام)">
+        </div>
+        <div class="form-group">
+            <label>الإيميل</label>
+            <input type="email" id="email" placeholder="ادخل الإيميل">
+        </div>
+        <div class="form-group">
+            <label>الباقة</label>
+            <select id="package" onchange="updateFields()">
+                <option value="">اختر الباقة</option>
+                <option value="مسبق">مسبق</option>
+                <option value="مفوتر">مفوتر</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>الاودبي</label>
+            <input type="text" id="audibi" placeholder="ادخل الاودبي">
+        </div>
+        <div class="form-group">
+            <label>السرعة</label>
+            <select id="speed" onchange="updateFields()">
+                <option value="">اختر السرعة</option>
+                <option value="300MB">300MB</option>
+                <option value="400MB">400MB</option>
+                <option value="500MB">500MB</option>
+                <option value="1GB">1GB</option>
+            </select>
+        </div>
+        <!-- حقل مدة الاشتراك -->
+        <div class="form-group" id="subscriptionDurationGroup">
+            <label>مدة الاشتراك</label>
+            <select id="subscriptionDuration" onchange="updatePackagePrices()">
+                <option value="">اختر المدة</option>
+                <option value="6">6 أشهر</option>
+                <option value="12">12 شهرًا</option>
+            </select>
+        </div>
+        <!-- حقل سعر الباقة -->
+        <div class="form-group" id="packagePriceGroup">
+            <label>سعر الباقة</label>
+            <select id="packagePrice">
+                <option value="">اختر السعر</option>
+            </select>
+        </div>
+        <div class="form-group hidden" id="boostersGroup">
+            <label>المقويات</label>
+            <select id="boosters">
+                <option value="">اختر المقويات</option>
+                <option value="يوجد مقويات">يوجد مقويات</option>
+                <option value="بدون مقويات">بدون مقويات</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>كود المندوب</label>
+            <input type="text" id="code" placeholder="ادخل كود المندوب">
+        </div>
+        <button class="button copy" onclick="copyData()">نسخ البيانات</button>
+        <button class="button whatsapp" onclick="shareOnWhatsApp()">مشاركة عبر واتساب</button>
+    </div>
+
+    <script>
+        // تحديث إظهار/إخفاء الحقول بناءً على الشروط
+        function updateFields() {
+            const package = document.getElementById('package').value;
+            const speed = document.getElementById('speed').value;
+            const boostersGroup = document.getElementById('boostersGroup');
+            const subscriptionDurationGroup = document.getElementById('subscriptionDurationGroup');
+            const packagePriceGroup = document.getElementById('packagePriceGroup');
+
+            // إظهار/إخفاء حقل المقويات
+            if (package === 'مسبق' || (package === 'مفوتر' && speed === '300MB')) {
+                boostersGroup.classList.add('hidden');
+            } else {
+                boostersGroup.classList.remove('hidden');
+            }
+
+            // إظهار/إخفاء حقل مدة الاشتراك وسعر الباقة
+            if (package === 'مفوتر') {
+                subscriptionDurationGroup.classList.add('hidden');
+                packagePriceGroup.classList.add('hidden');
+            } else {
+                subscriptionDurationGroup.classList.remove('hidden');
+                packagePriceGroup.classList.remove('hidden');
+                updatePackagePrices(); // تحديث أسعار الباقة
+            }
+        }
+
+        // تحديث خيارات سعر الباقة بناءً على مدة الاشتراك
+        function updatePackagePrices() {
+            const duration = document.getElementById('subscriptionDuration').value;
+            const packagePriceSelect = document.getElementById('packagePrice');
+
+            // مسح الخيارات الحالية
+            packagePriceSelect.innerHTML = '';
+
+            // إضافة الخيارات بناءً على مدة الاشتراك
+            if (duration === "6") {
+                addOption(packagePriceSelect, "1725", "1725 ريال");
+                addOption(packagePriceSelect, "2070", "2070 ريال");
+                addOption(packagePriceSelect, "2415", "2415 ريال");
+                addOption(packagePriceSelect, "5520", "5520 ريال");
+            } else if (duration === "12") {
+                addOption(packagePriceSelect, "3450", "3450 ريال");
+                addOption(packagePriceSelect, "4140", "4140 ريال");
+                addOption(packagePriceSelect, "4830", "4830 ريال");
+                addOption(packagePriceSelect, "11040", "11040 ريال");
+            }
+        }
+
+        // إضافة خيار جديد إلى القائمة
+        function addOption(selectElement, value, text) {
+            const option = document.createElement("option");
+            option.value = value;
+            option.text = text;
+            selectElement.add(option);
+        }
+
+        // نسخ البيانات إلى الحافظة
+        function copyData() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const package = document.getElementById('package').value;
+            const audibi = document.getElementById('audibi').value;
+            const speed = document.getElementById('speed').value;
+            const boosters = document.getElementById('boosters').value;
+            const code = document.getElementById('code').value;
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value;
+            const packagePrice = document.getElementById('packagePrice').value;
+
+            const formattedPackage = formatPackage(package);
+            const formattedPhone = '966' + phone.slice(1);
+            const formattedAudibi = formatAudibi(audibi);
+
+            // بناء البيانات بدون أسماء الحقول
+            let data = `${name}\n${id}\n${formattedPhone}\n${email}\n${formattedPackage}\n${formattedAudibi}\n${speed}\n${boosters}\n${code}`;
+
+            // إضافة مدة الاشتراك وسعر الباقة فقط إذا كانت الباقة "مسبق"
+            if (package === 'مسبق') {
+                data += `\n${subscriptionDuration}\n${packagePrice}`;
+            }
+
+            // إنشاء عنصر نصي مؤقت
+            const tempInput = document.createElement('textarea');
+            tempInput.value = data;
+            document.body.appendChild(tempInput);
+
+            // نسخ النص
+            tempInput.select();
+            document.execCommand('copy');
+
+            // إزالة العنصر مؤقت
+            document.body.removeChild(tempInput);
+
+            alert('تم نسخ البيانات إلى الحافظة!');
+        }
+
+        // مشاركة البيانات عبر واتساب
+        function shareOnWhatsApp() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const package = document.getElementById('package').value;
+            const audibi = document.getElementById('audibi').value;
+            const speed = document.getElementById('speed').value;
+            const boosters = document.getElementById('boosters').value;
+            const code = document.getElementById('code').value;
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value;
+            const packagePrice = document.getElementById('packagePrice').value;
+
+            const formattedPackage = formatPackage(package);
+            const formattedPhone = '966' + phone.slice(1);
+            const formattedAudibi = formatAudibi(audibi);
+
+            // بناء البيانات بدون أسماء الحقول
+            let message = `${name}\n${id}\n${formattedPhone}\n${email}\n${formattedPackage}\n${formattedAudibi}\n${speed}\n${boosters}\n${code}`;
+
+            // إضافة مدة الاشتراك وسعر الباقة فقط إذا كانت الباقة "مسبق"
+            if (package === 'مسبق') {
+                message += `\n${subscriptionDuration}\n${packagePrice}`;
+            }
+
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // التحقق من صحة رقم الجوال
+        function validatePhone(phone) {
+            const phoneRegex = /^0\d{9}$/; // يبدأ بـ 0 ويتكون من 10 أرقام
+            return phoneRegex.test(phone);
+        }
+
+        // التحقق من صحة الإيميل
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // تنسيق إيميل صحيح
+            return emailRegex.test(email);
+        }
+
+        // التحقق من عدم ترك أي حقل فارغ
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const id = document.getElementById('id').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const package = document.getElementById('package').value.trim();
+            const audibi = document.getElementById('audibi').value.trim();
+            const speed = document.getElementById('speed').value.trim();
+            const boosters = document.getElementById('boosters').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const subscriptionDuration = document.getElementById('subscriptionDuration').value.trim();
+            const packagePrice = document.getElementById('packagePrice').value.trim();
+
+            if (!name || !id || !phone || !email || !package || !audibi || !speed || !code) {
+                alert('يرجى ملء جميع الحقول!');
+                return false;
+            }
+
+            if (!validatePhone(phone)) {
+                alert('رقم الجوال غير صحيح! يجب أن يبدأ بـ 0 ويتكون من 10 أرقام.');
+                return false;
+            }
+
+            if (!validateEmail(email)) {
+                alert('الإيميل غير صحيح! يرجى إدخال إيميل صالح.');
+                return false;
+            }
+
+            // التحقق من اختيار المقويات إذا كان الحقل ظاهرًا
+            const boostersGroup = document.getElementById('boostersGroup');
+            if (!boostersGroup.classList.contains('hidden') && !boosters) {
+                alert('يرجى اختيار المقويات!');
+                return false;
+            }
+
+            return true;
+        }
+
+        // تنسيق الباقة
+        function formatPackage(package) {
+            if (package === 'مفوتر') {
+                return 'eLife Connect Postpaid';
+            } else if (package === 'مسبق') {
+                return 'eLife Connect Prepaid';
+            }
+            return package;
+        }
+
+        // تنسيق الاودبي
+        function formatAudibi(audibi) {
+            if (audibi.startsWith('D')) {
+                return `ODB:${audibi}`; // بدون مسافة بعد النقطتين
+            }
+            return audibi;
+        }
+
+        // تحديث الحقول عند تحميل الصفحة
+        window.onload = function () {
+            updateFields();
+            updatePackagePrices();
+        };
+    </script>
+</body>
+</html>
