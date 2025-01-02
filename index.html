@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>  سفاري للاتصالات</title>
-    <title>
-      سفاري للاتصالات
-        بيانات العميل
-    </title>
+    <title>بيانات العميل</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,22 +83,17 @@
             margin-bottom: 10px;
             font-size: 14px;
         }
-        .image-container {
-            text-align: center; /* توسيط الصورة أفقياً */
-            margin-bottom: 20px; /* مسافة أسفل الصورة */
-        }
-        .image-container img {
-            max-width: 100%; /* التأكد من أن الصورة لا تتجاوز عرض الحاوية */
-            height: auto; /* الحفاظ على نسبة العرض إلى الارتفاع */
+        .footer-message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <div class="image-container">
-        <img src="C:\Users\A.Eissa\OneDrive\NEW CUSTOMER IFO\image.png" alt="صورة التطبيق"> <!-- استبدل image.png بمسار الصورة الفعلي -->
-    </div>
     <div class="container">
-        <h1>بيانات العميل</h1>
+        <h1><strong>سفاري للاتصالات</strong></h1> <!-- العنوان الجديد بالخط العريض -->
         <div id="errorMessage" class="error-message hidden"></div>
         <div class="form-group">
             <label>اسم العميل</label>
@@ -172,6 +163,10 @@
         </div>
         <button class="button copy" onclick="copyData()">نسخ البيانات</button>
         <button class="button whatsapp" onclick="shareOnWhatsApp()">مشاركة عبر واتساب</button>
+        <!-- الرسالة في النهاية -->
+        <div class="footer-message">
+            مع تحياتي / أحمد عيسي (سفاري للاتصالات)
+        </div>
     </div>
 
     <script>
@@ -382,7 +377,4 @@
         };
     </script>
 </body>
-    <title>
-Best regards A.E 
-    </title>
 </html>
